@@ -61,15 +61,15 @@ def get_document(request: DocumentParameters):
 
 
 @app.post("/add_document")
-async def add_document(request: UploadFile = File(...)):
+async def add_document(file: UploadFile = File(...)):
     try:
         # Save the file or just read the contents
         save_directory = "./saved_files"
         os.makedirs(save_directory, exist_ok=True)
 
-        file_path = os.path.join(save_directory, request.filename)
+        file_path = os.path.join(save_directory, file.filename)
         with open(file_path, "wb") as f:
-            content = await request.read()
+            content = await file.read()
             f.write(content)
 
         engine.add_document(file_path)

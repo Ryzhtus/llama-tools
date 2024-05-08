@@ -24,7 +24,7 @@ def function_call(function_call_str: str) -> str:
 
 def upload_file(file):
     # Since we're dealing with an UploadedFile object, we need to reset its position
-    # file.seek(0)  # Reset file pointer to the beginning
+    file.seek(0)  # Reset file pointer to the beginning
     files = {
         "file": (
             file.name,
