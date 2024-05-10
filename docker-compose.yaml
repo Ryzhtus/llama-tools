@@ -8,6 +8,13 @@ services:
     networks:
       - deploy_network
     container_name: llm_app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
   retrieval:
     build: retrieval/
