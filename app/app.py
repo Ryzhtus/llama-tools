@@ -1,31 +1,32 @@
 import streamlit as st
 import requests
 import pypdfium2 as pdfium
-import json
 from src.functions import functions_map, check_function_call, parse_function_call
 import time
 
 llm_url = "http://llm_app:8001"
 retrieval_url = "http://retrieval_app:8002"
 
+
 def clear_application_data():
     # Clear chat history
-    if 'chat_history' in st.session_state:
+    if "chat_history" in st.session_state:
         del st.session_state.chat_history
 
     # Clear all uploaded documents
-    if 'uploaded_docs' in st.session_state:
+    if "uploaded_docs" in st.session_state:
         del st.session_state.uploaded_docs
 
     # Remove the selected document
-    if 'selected_doc' in st.session_state:
+    if "selected_doc" in st.session_state:
         del st.session_state.selected_doc
 
     requests.post(url=llm_url + "/reset")
     requests.post(url=retrieval_url + "/reset")
 
     # Optional: add a message to confirm clearing is done
-    st.success('All data cleared successfully!')
+    st.success("All data cleared successfully!")
+
 
 def upload_file(file):
     # Since we're dealing with an UploadedFile object, we need to reset its position
@@ -42,8 +43,9 @@ def upload_file(file):
 
 
 def function_call(function_call_str: str) -> str:
-    func_name, func_args = parse_function_call(function_call_str)
-    func_args = json.loads(func_args)
+    parsed_call = parse_function_call(function_call_str)
+    func_name = parsed_call.get("name")
+    func_args = parsed_call.get("arguments")
 
     if func_name == "get_document_text":
         function_response = functions_map[func_name](
@@ -58,14 +60,14 @@ def function_call(function_call_str: str) -> str:
 def generate_response(prompt: str):
     # Simulate a POST request to a backend that processes the user input
     llm_response = requests.post(llm_url + "/generate", json={"prompt": prompt})
-    llm_response_str = llm_response.json()["response"]
+    llm_response_str = llm_response.json()
 
     if check_function_call(llm_response_str):
         llm_input_str = function_call(llm_response_str)
         llm_response = requests.post(
             llm_url + "/generate", json={"prompt": llm_input_str}
         )
-        llm_response_str = llm_response.json()["response"]
+        llm_response_str = llm_response.json()
 
     for word in llm_response_str.split():
         yield word + " "
@@ -75,14 +77,14 @@ def generate_response(prompt: str):
 supplementary_container = st.sidebar
 
 with supplementary_container:
-    if st.button('Reset Session'):
+    if st.button("Reset Session"):
         clear_application_data()
 
     st.title("Documents Collection")
 
     if "selected_document_name" in st.session_state:
         st.write(f"Selected: {st.session_state['selected_document_name']}")
-    
+
     uploaded_files = st.file_uploader("Load a document", accept_multiple_files=True)
 
     if uploaded_files:
@@ -113,7 +115,7 @@ with supplementary_container:
                             st.session_state["selected_document_name"] = (
                                 uploaded_file.name
                             )
-                        
+
                     else:
                         st.write("Preview not available for this file type.")
                 except Exception as e:

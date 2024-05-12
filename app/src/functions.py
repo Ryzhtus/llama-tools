@@ -1,4 +1,6 @@
 import requests
+import re
+import json
 
 retrieval_url = "http://retrieval_app:8002"
 
@@ -10,14 +12,30 @@ def check_function_call(response: str) -> bool:
     return False
 
 
-def parse_function_call(
-    function_call_str: str,
-) -> tuple[str, dict[str, str | int | float]]:
-    function_dict = eval(function_call_str.replace("<functioncall>", "").strip())
-    function_name = function_dict["name"]
-    function_args = function_dict["arguments"]
+def parse_function_call(input_str: str) -> None | dict[str, any]:
+    """
+    Parses a text string to find and extract a function call.
+    The function call is expected to be in the format:
+    <functioncall> {"name": "<function_name>", "arguments": "<arguments_json_string>"}
+    """
+    # Regex pattern to extract 'name' and 'arguments'
+    pattern = r'"name":\s*"([^"]+)",\s*"arguments":\s*\'(.*?)\''
 
-    return function_name, function_args
+    # Search with regex
+    match = re.search(pattern, input_str)
+    if match:
+        try:
+            name = match.group(1)
+            arguments_str = match.group(2)
+
+            # Parse the arguments JSON
+            arguments = json.loads(arguments_str)
+
+            return {"name": name, "arguments": arguments}
+        except json.JSONDecodeError:
+            # If JSON parsing fails, return None
+            return None
+    return None
 
 
 def find_similiar_fragments(prompt: str, top_k: int) -> str:
