@@ -3,23 +3,10 @@ import requests
 import pypdfium2 as pdfium
 import json
 from src.functions import functions_map, check_function_call, parse_function_call
+import time
 
 llm_url = "http://llm_app:8001"
 retrieval_url = "http://retrieval_app:8002"
-
-
-def function_call(function_call_str: str) -> str:
-    func_name, func_args = parse_function_call(function_call_str)
-    func_args = json.loads(func_args)
-
-    if func_name == "get_document_text":
-        function_response = functions_map[func_name](
-            st.session_state["selected_document_name"]
-        )
-    else:
-        function_response = functions_map[func_name](**func_args)
-
-    return function_response
 
 
 def upload_file(file):
@@ -36,13 +23,46 @@ def upload_file(file):
     return response
 
 
+def function_call(function_call_str: str) -> str:
+    func_name, func_args = parse_function_call(function_call_str)
+    func_args = json.loads(func_args)
+
+    if func_name == "get_document_text":
+        function_response = functions_map[func_name](
+            st.session_state["selected_document_name"]
+        )
+    else:
+        function_response = functions_map[func_name](**func_args)
+
+    return function_response
+
+
+def generate_response(prompt: str):
+    # Simulate a POST request to a backend that processes the user input
+    llm_response = requests.post(llm_url + "/generate", json={"prompt": prompt})
+    llm_response_str = llm_response.json()["response"]
+
+    if check_function_call(llm_response_str):
+        llm_input_str = function_call(llm_response_str)
+        llm_response = requests.post(
+            llm_url + "/generate", json={"prompt": llm_input_str}
+        )
+        llm_response_str = llm_response.json()["response"]
+
+    for word in llm_response_str.split():
+        yield word + " "
+        time.sleep(0.05)
+
+
 supplementary_container = st.sidebar
 
 with supplementary_container:
     st.title("Documents Collection")
-    uploaded_files = st.file_uploader(
-        "Documents Collection", accept_multiple_files=True
-    )
+
+    if "selected_document_name" in st.session_state:
+        st.write(f"Selected: {st.session_state['selected_document_name']}")
+    
+    uploaded_files = st.file_uploader("Load a document", accept_multiple_files=True)
 
     if uploaded_files:
         for uploaded_file in uploaded_files:
@@ -72,32 +92,34 @@ with supplementary_container:
                             st.session_state["selected_document_name"] = (
                                 uploaded_file.name
                             )
-                            st.write(f"Selected: {uploaded_file.name}")
+                        
                     else:
                         st.write("Preview not available for this file type.")
                 except Exception as e:
                     st.write("Error loading preview:", e)
 
 # Create the main container for text input/output
-main_container = st.container()
-with main_container:
-    st.title("Main Container")
-    user_input = st.text_area("Enter your text here:")
+chat_container = st.container()
 
-    if user_input:
-        # Simulate a POST request to a backend that processes the user input
-        llm_response = requests.post(llm_url + "/generate", json={"prompt": user_input})
-        llm_response_str = llm_response.json()["response"]
+with chat_container:
+    st.title("Chat")
 
-        if check_function_call(llm_response_str):
-            llm_input_str = function_call(llm_response_str)
-            llm_response = requests.post(
-                llm_url + "/generate", json={"prompt": llm_input_str}
-            )
-            llm_response_str = llm_response.json()["response"]
-        # Display response from backend assuming it returns JSON
-        st.write(llm_response_str)
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-# Optionally display the selected document name outside the loop
-if "selected_document_name" in st.session_state:
-    st.write(f"Selected document: {st.session_state['selected_document_name']}")
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    if prompt := st.chat_input("What is up?"):
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        # Display user message in chat message container
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            response = st.write_stream(generate_response(prompt))
+        # Add assistant response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": response})
