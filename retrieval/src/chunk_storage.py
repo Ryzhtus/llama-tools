@@ -69,3 +69,6 @@ class ChunkStorage:
             chunk = Chunk(chunk_text, chunk_id, document.name)
 
             self.chunks.append(chunk)
+
+    def reset(self):
+        self.chunks = []

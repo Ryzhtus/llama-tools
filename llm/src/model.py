@@ -22,8 +22,8 @@ class GenerativeModel:
         self.history = [
             {
                 "role": "system",
-                "content": f"You are a helpful assistant with access to the following functions. Use them if required - {str(functions_list)}",
-            },
+                "content": f"You are a helpful assistant that helps users to get information from their documents. You have access to the following functions. Use them if required - {str(functions_list)}",
+            }
         ]
 
     def generate_response(self, prompt: str) -> str:
@@ -53,3 +53,11 @@ class GenerativeModel:
         self.history.append({"role": "assistant", "content": llm_response})
 
         return llm_response
+
+    def reset(self):
+        self.history = [
+            {
+                "role": "system",
+                "content": f"You are a helpful assistant that helps users to get information from their documents. You have access to the following functions. Use them if required - {str(functions_list)}",
+            }
+        ]

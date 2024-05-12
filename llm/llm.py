@@ -22,3 +22,8 @@ def generate(input_data: InputData):
     response = llm.generate_response(prompt)
 
     return OutputData(response=response)
+
+
+@app.post("/reset")
+def reset():
+    llm.reset()

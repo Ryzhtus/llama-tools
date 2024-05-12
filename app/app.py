@@ -8,6 +8,24 @@ import time
 llm_url = "http://llm_app:8001"
 retrieval_url = "http://retrieval_app:8002"
 
+def clear_application_data():
+    # Clear chat history
+    if 'chat_history' in st.session_state:
+        del st.session_state.chat_history
+
+    # Clear all uploaded documents
+    if 'uploaded_docs' in st.session_state:
+        del st.session_state.uploaded_docs
+
+    # Remove the selected document
+    if 'selected_doc' in st.session_state:
+        del st.session_state.selected_doc
+
+    requests.post(url=llm_url + "/reset")
+    requests.post(url=retrieval_url + "/reset")
+
+    # Optional: add a message to confirm clearing is done
+    st.success('All data cleared successfully!')
 
 def upload_file(file):
     # Since we're dealing with an UploadedFile object, we need to reset its position
@@ -57,6 +75,9 @@ def generate_response(prompt: str):
 supplementary_container = st.sidebar
 
 with supplementary_container:
+    if st.button('Reset Session'):
+        clear_application_data()
+
     st.title("Documents Collection")
 
     if "selected_document_name" in st.session_state:

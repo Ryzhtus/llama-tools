@@ -38,6 +38,10 @@ class RetrievalEngine:
         )
 
         return sentence_embeddings
+    
+    def reset(self):
+        self.check_storage.reset()
+        self.index.reset()
 
     def check_document(self, name: str) -> bool:
         """Checks that document is already in the database"""

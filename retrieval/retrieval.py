@@ -81,3 +81,7 @@ async def add_document(file: UploadFile = File(...)):
         return JSONResponse(
             status_code=500, content={"message": "An error occurred", "details": str(e)}
         )
+
+@app.post("/reset")
+def reset():
+    engine.reset()
