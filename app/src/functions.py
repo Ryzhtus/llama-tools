@@ -25,7 +25,7 @@ def find_similiar_fragments(prompt: str, top_k: int) -> str:
         retrieval_url + "/search", json={"prompt": prompt, "top_k": 1}
     )
 
-    return response.json()["response"]
+    return response.json()
 
 
 def find_documents_that_has_fragment(fragment: str) -> list[str]:
@@ -33,13 +33,13 @@ def find_documents_that_has_fragment(fragment: str) -> list[str]:
         retrieval_url + "/search_similar", json={"fragment": fragment}
     )
 
-    return response.json()["search_results"]
+    return response.json()
 
 
 def get_document_text(name: str) -> str:
     response = requests.post(retrieval_url + "/get_document", json={"name": name})
 
-    return response.json()["text"]
+    return response.json()
 
 
 functions_map = {

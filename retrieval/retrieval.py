@@ -40,24 +40,24 @@ class SearchResponse(BaseModel):
 
 
 @app.post("/search")
-def search(request: RetrievalSearchParameters, response_model=RetrievalResponse):
+def search(request: RetrievalSearchParameters):
     response = engine.search(request.prompt, request.top_k)
 
-    return RetrievalResponse(response=response)
+    return response
 
 
 @app.post("/search_similar")
-def search_similar_documents(request: SearchParameters, response_model=SearchResponse):
+def search_similar_documents(request: SearchParameters):
     response = engine.get_list_of_similar_documents(request.fragment)
 
-    return SearchResponse(response=response)
+    return response
 
 
 @app.post("/get_document")
 def get_document(request: DocumentParameters):
     response = engine.get_document(request.name)
 
-    return DocumentResponse(response=response)
+    return response
 
 
 @app.post("/add_document")

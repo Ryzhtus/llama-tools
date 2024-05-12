@@ -40,7 +40,7 @@ class RetrievalEngine:
         return sentence_embeddings
     
     def reset(self):
-        self.check_storage.reset()
+        self.chunk_storage.reset()
         self.index.reset()
 
     def check_document(self, name: str) -> bool:
@@ -96,8 +96,12 @@ class RetrievalEngine:
     def get_list_of_similar_documents(self, fragment: str) -> list[str]:
         fragment_embedding = self.__get_embeddings(fragment)
 
+        k = int(len(self.chunk_storage) / 2)
+        if k == 0:
+            k = 1
+
         distances, indices = self.index.search(
-            fragment_embedding.data.cpu().numpy(), k=int(len(self.chunk_storage) / 2)
+            fragment_embedding.data.cpu().numpy(), k=k
         )
 
         search_result = set()
