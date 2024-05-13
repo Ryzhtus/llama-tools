@@ -2,6 +2,15 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from src.functions import functions_list
 import torch
 
+SYSTEM_PROMPT = (
+    f"""You are a helpful assistant that helps users to extract and process information from their documents.
+Your current capabilities are summarization, document-based question-answering, searching for similar documents' content by provided
+fragment and searching the list of document names that are similar to the given text. 
+In order to accomplish a user's request that involves any of the listed above capabilities, you have to use one of the following functions: {str(functions_list)}.\n"""
+    + """The function must be called only in the following format: <functioncall> {"name": "<function_name>", "arguments": "<arguments_json_string>"}.\n"""
+    + """Don't make any assumptions about the required document's content. In any other scenario that doesn't involve work with the document, you can simply chat with the user."""
+)
+
 
 class GenerativeModel:
     def __init__(self) -> None:
@@ -22,7 +31,7 @@ class GenerativeModel:
         self.history = [
             {
                 "role": "system",
-                "content": f"You are a helpful assistant that helps users to get information from their documents. You have access to the following functions. Use them if required - {str(functions_list)}",
+                "content": SYSTEM_PROMPT,
             }
         ]
 
@@ -58,6 +67,6 @@ class GenerativeModel:
         self.history = [
             {
                 "role": "system",
-                "content": f"You are a helpful assistant that helps users to get information from their documents. You have access to the following functions. Use them if required - {str(functions_list)}",
+                "content": SYSTEM_PROMPT,
             }
         ]

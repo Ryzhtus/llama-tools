@@ -65,7 +65,8 @@ class OpenAISchema(BaseModel):
 
 @openai_function
 def get_document_text() -> str:
-    """Returns currently selected document's text for the whole document's summarization"""
+    """Returns currently selected document's text for the whole document's summarization
+    or answering questions about the document."""
 
     return ""
 
@@ -73,7 +74,7 @@ def get_document_text() -> str:
 @openai_function
 def find_similiar_fragments(prompt: str, top_k: str) -> str:
     """Returns top K similiar document fragments from the database by a given prompt.
-    Useful for question answering or searching for similar document fragments from the database
+    Useful for question answering or searching for similar document fragments from the database.
     """
 
     return ""
