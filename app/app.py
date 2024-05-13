@@ -56,19 +56,22 @@ def function_call(function_call_str: str) -> str:
     return str(function_response)
 
 
-def generate_response(prompt: str):
-    # Simulate a POST request to a backend that processes the user input
+def llm_call(prompt: str) -> str:
     llm_response = requests.post(llm_url + "/generate", json={"prompt": prompt})
     llm_response_str = llm_response.json()["response"]
 
-    llm_input_str = function_call(llm_response_str)
-    if llm_input_str != None:
-        llm_response = requests.post(
-            llm_url + "/generate", json={"prompt": llm_input_str}
-        )
-        llm_response_str = llm_response.json()["response"]
-
     return llm_response_str
+
+
+def generate_response(prompt: str):
+    # Simulate a POST request to a backend that processes the user input
+    llm_response = llm_call(prompt)
+    next_llm_prompt = function_call(llm_response)
+
+    if next_llm_prompt != None:
+        llm_response = generate_response(next_llm_prompt)
+
+    return llm_response
 
 
 supplementary_container = st.sidebar

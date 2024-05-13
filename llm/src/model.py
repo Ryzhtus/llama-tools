@@ -8,7 +8,9 @@ Your current capabilities are summarization, document-based question-answering, 
 fragment and searching the list of document names that are similar to the given text. 
 In order to accomplish a user's request that involves any of the listed above capabilities, you have to use one of the following functions: {str(functions_list)}.\n"""
     + """The function must be called only in the following format: <functioncall> {"name": "<function_name>", "arguments": "<arguments_json_string>"}.\n"""
-    + """Don't make any assumptions about the required document's content. In any other scenario that doesn't involve work with the document, you can simply chat with the user."""
+    + """Don't make any assumptions about the required document's content. If after the function call the provided information to you is not enough, you can call another tool
+    in order to get more information from the database. 
+    In any other scenario that doesn't involve work with the document, you can simply chat with the user."""
 )
 
 
