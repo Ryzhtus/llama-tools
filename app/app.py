@@ -54,7 +54,7 @@ def function_call(function_call_str: str) -> str:
     else:
         function_response = functions_map[func_name](**func_args)
 
-    return function_response
+    return str(function_response)
 
 
 def generate_response(prompt: str):
@@ -62,8 +62,8 @@ def generate_response(prompt: str):
     llm_response = requests.post(llm_url + "/generate", json={"prompt": prompt})
     llm_response_str = llm_response.json()["response"]
 
-    if check_function_call(llm_response_str):
-        llm_input_str = function_call(llm_response_str)
+    llm_input_str = function_call(llm_response_str)
+    if llm_input_str != None:
         llm_response = requests.post(
             llm_url + "/generate", json={"prompt": llm_input_str}
         )
@@ -141,6 +141,16 @@ with chat_container:
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
-            response = st.write(generate_response(prompt))
+            st.markdown(
+                function_call(
+                    '<functioncall> {"name": "find_documents_that_has_fragment", "arguments": \'{"fragment": "The University of Bristol"}\'}'
+                )
+            )
+            st.markdown(
+                function_call(
+                    '<functioncall> {"name": "get_document_text", "arguments": \'{"args": []}\'}'
+                )
+            )
+            # response = st.write(generate_response(prompt))
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
