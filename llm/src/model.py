@@ -1,5 +1,5 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from llm.src.functions_converter import functions_list
+from llm.src.functions import functions_list
 import torch
 
 SYSTEM_PROMPT = (
