@@ -60,18 +60,16 @@ def function_call(function_call_str: str) -> str:
 def generate_response(prompt: str):
     # Simulate a POST request to a backend that processes the user input
     llm_response = requests.post(llm_url + "/generate", json={"prompt": prompt})
-    llm_response_str = llm_response.json()
+    llm_response_str = llm_response.json()["response"]
 
     if check_function_call(llm_response_str):
         llm_input_str = function_call(llm_response_str)
         llm_response = requests.post(
             llm_url + "/generate", json={"prompt": llm_input_str}
         )
-        llm_response_str = llm_response.json()
+        llm_response_str = llm_response.json()["response"]
 
-    for word in llm_response_str.split():
-        yield word + " "
-        time.sleep(0.05)
+    return llm_response_str
 
 
 supplementary_container = st.sidebar
@@ -143,6 +141,6 @@ with chat_container:
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
-            response = st.write_stream(generate_response(prompt))
+            response = st.write(generate_response(prompt))
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
