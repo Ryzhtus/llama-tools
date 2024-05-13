@@ -327,31 +327,3 @@ def convert_to_openai_function(
             " either be in OpenAI function format or valid JSON schema with top-level"
             " 'title' and 'description' keys."
         )
-
-
-def get_document_text() -> str:
-    """Returns currently selected document's text for the whole document's summarization
-    or answering questions about the document."""
-
-    return ""
-
-
-def find_similiar_fragments(prompt: str, top_k: str) -> str:
-    """Returns top K similiar document fragments from the database by a given prompt.
-    Useful for question answering or searching for similar document fragments from the database.
-    """
-
-    return ""
-
-
-def find_documents_that_has_fragment(fragment: str) -> list[str]:
-    """Returns a list of K document names in which the specified fragment occurs."""
-
-    return ""
-
-
-functions_list = [
-    get_document_text,
-    find_similiar_fragments,
-    find_documents_that_has_fragment,
-]

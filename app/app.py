@@ -1,8 +1,7 @@
 import streamlit as st
 import requests
 import pypdfium2 as pdfium
-from src.functions import functions_map, check_function_call, parse_function_call
-import time
+from src.functions import functions_map, parse_function_call
 
 llm_url = "http://llm_app:8001"
 retrieval_url = "http://retrieval_app:8002"
@@ -141,16 +140,6 @@ with chat_container:
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
-            st.markdown(
-                function_call(
-                    '<functioncall> {"name": "find_documents_that_has_fragment", "arguments": \'{"fragment": "The University of Bristol"}\'}'
-                )
-            )
-            st.markdown(
-                function_call(
-                    '<functioncall> {"name": "get_document_text", "arguments": \'{"args": []}\'}'
-                )
-            )
-            # response = st.write(generate_response(prompt))
+            response = st.markdown(generate_response(prompt))
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})

@@ -38,7 +38,7 @@ def parse_function_call(input_str: str) -> None | dict[str, any]:
     return None
 
 
-def find_similiar_fragments(prompt: str, top_k: int) -> str:
+def request_similiar_documents_contents(prompt: str, top_k: int) -> str:
     response = requests.post(
         retrieval_url + "/search", json={"prompt": prompt, "top_k": 1}
     )
@@ -46,7 +46,7 @@ def find_similiar_fragments(prompt: str, top_k: int) -> str:
     return response.json()
 
 
-def find_documents_that_has_fragment(fragment: str) -> list[str]:
+def request_list_of_documents_names(fragment: str) -> list[str]:
     response = requests.post(
         retrieval_url + "/search_similar", json={"fragment": fragment}
     )
@@ -54,40 +54,14 @@ def find_documents_that_has_fragment(fragment: str) -> list[str]:
     return response.json()
 
 
-def get_document_text(name: str) -> str:
+def get_current_document_text(name: str) -> str:
     response = requests.post(retrieval_url + "/get_document", json={"name": name})
 
     return response.json()
 
 
 functions_map = {
-    "find_similiar_fragments": find_similiar_fragments,
-    "find_documents_that_has_fragment": find_documents_that_has_fragment,
-    "get_document_text": get_document_text,
+    "request_similiar_documents_contents": request_similiar_documents_contents,
+    "request_list_of_documents_names": request_list_of_documents_names,
+    "get_current_document_text": get_current_document_text,
 }
-
-
-# if __name__ == "__main__":
-#     function_calls = [
-#         "<functioncall> "
-#         + str(
-#             {
-#                 "name": "find_similiar_fragments",
-#                 "arguments": '{"prompt": "Where is The University of Bristol registered?", "top_k": "1"}',
-#             }
-#         ),
-#         "<functioncall> "
-#         + str(
-#             {
-#                 "name": "find_documents_that_has_fragment",
-#                 "arguments": '{"fragment": "The University of Bristol"}',
-#             }
-#         ),
-#     ]
-
-#     for func in function_calls:
-#         if check_function_call(func):
-#             func_name, func_args = parse_function_call(func)
-#             print(func_args)
-#             response = function_call(func_name, func_args)
-#             print(response)
