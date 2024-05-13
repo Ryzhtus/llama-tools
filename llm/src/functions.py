@@ -23,7 +23,7 @@ def request_list_of_documents_names(fragment: str) -> list[str]:
 
 
 functions_list = [
-    get_current_document_text,
-    request_similiar_documents_contents,
-    request_list_of_documents_names,
+    convert_to_openai_function(get_current_document_text),
+    convert_to_openai_function(request_similiar_documents_contents),
+    convert_to_openai_function(request_list_of_documents_names),
 ]
