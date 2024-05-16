@@ -135,7 +135,19 @@ with chat_container:
     st.title("Chat")
 
     if "messages" not in st.session_state:
-        st.session_state.messages = []
+        st.session_state.messages = [
+            {
+                "role": "assistant",
+                "content": """
+            Hi! I'm an LLM assistant that can help you with:\n
+            1) Answering your questions about your documents content.\n
+            2) Find documents that have a fragment you're looking for.\n
+            3) Summarize a currently selected document.\n
+            \n
+            Would be glad to help you!
+            """,
+            }
+        ]
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
@@ -150,6 +162,7 @@ with chat_container:
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
-            response = st.markdown(generate_response(prompt))
-        # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
+            response = str(generate_response(prompt))
+            st.markdown(response)
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": response})
