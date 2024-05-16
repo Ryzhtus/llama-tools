@@ -1,3 +1,6 @@
+from llm.src.functions_converter import convert_python_function_to_openai_function
+
+
 def get_document_context_for_summarization() -> str:
     """Use this tool to fetch the entire text of the currently active document only for its summarization."""
 
