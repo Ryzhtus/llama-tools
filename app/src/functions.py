@@ -18,7 +18,12 @@ def parse_function_call(input_str: str) -> None | dict[str, any] | str:
     The function call is expected to be in the format:
     <functioncall> {"name": "<function_name>", "arguments": "<arguments_json_string>"}
     """
-    pattern = r'["\']name["\']\s*:\s*["\']([^"\']+?)["\']\s*,\s*["\']arguments["\']\s*:\s*(\{.*?\}(?=["\']\s*\}|["\']$)|\{.*?\}|\["\']\{.*?\}["\'])'
+    # Regex pattern to extract 'name' and 'arguments'
+
+    if "get_document_context_for_summarization" in input_str:
+        return {"name": "get_document_context_for_summarization", "arguments": {}}
+
+    pattern = r'["\']name["\']\s*:\s*["\']([^"\']+?)["\']\s*,\s*["\']arguments["\']\s*:\s*(\{.*?\}(?=["\']\s*\}|["\']$)|["\']\{.*?\}["\'])'
 
     # Search with regex
     match = re.search(pattern, input_str)
@@ -27,15 +32,8 @@ def parse_function_call(input_str: str) -> None | dict[str, any] | str:
             name = match.group(1)
             arguments_str = match.group(2)
 
-            # Remove surrounding quotes if they exist
-            if arguments_str.startswith(("'", '"')):
-                arguments_str = arguments_str[1:-1]
-
             # Parse the arguments JSON
-            if arguments_str == "{}":
-                arguments = {}
-            else:
-                arguments = json.loads(arguments_str)
+            arguments = json.loads(arguments_str)
 
             return {"name": name, "arguments": arguments}
         except json.JSONDecodeError:
@@ -69,5 +67,5 @@ def get_document_context_for_summarization(name: str) -> str:
 functions_map = {
     "search_similar_documents_in_the_database": search_similar_documents_in_the_database,
     "request_list_of_documents_names": request_list_of_documents_names,
-    "get_current_document_text": get_document_context_for_summarization,
+    "get_document_context_for_summarization": get_document_context_for_summarization,
 }
