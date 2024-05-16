@@ -76,7 +76,7 @@ def generate_response(prompt: str):
     next_llm_prompt = function_call(llm_response)
 
     if next_llm_prompt is not None:
-        llm_response = generate_response(next_llm_prompt)
+        return generate_response(next_llm_prompt)
 
     return llm_response
 
