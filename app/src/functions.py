@@ -18,8 +18,7 @@ def parse_function_call(input_str: str) -> None | dict[str, any] | str:
     The function call is expected to be in the format:
     <functioncall> {"name": "<function_name>", "arguments": "<arguments_json_string>"}
     """
-    # Regex pattern to extract 'name' and 'arguments'
-    pattern = r'"name":\s*"([^"]+)",\s*"arguments":\s*("{.*?}"|\'{.*?}\'|\{.*?\})'
+    pattern = r'["\']name["\']\s*:\s*["\']([^"\']+?)["\']\s*,\s*["\']arguments["\']\s*:\s*(\{.*?\}(?=["\']\s*\}|["\']$)|["\']\{.*?\}["\'])'
 
     # Search with regex
     match = re.search(pattern, input_str)
@@ -27,6 +26,10 @@ def parse_function_call(input_str: str) -> None | dict[str, any] | str:
         try:
             name = match.group(1)
             arguments_str = match.group(2)
+
+            # Remove surrounding quotes if they exist
+            if arguments_str.startswith(("'", '"')):
+                arguments_str = arguments_str[1:-1]
 
             # Parse the arguments JSON
             arguments = json.loads(arguments_str)
