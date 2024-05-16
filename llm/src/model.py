@@ -5,7 +5,7 @@ import torch
 
 class GenerativeModel:
     def __init__(self) -> None:
-        self.__model_id = "mzbac/llama-3-8B-Instruct-function-calling"
+        self.__model_id = "mzbac/llama-3-8B-Instruct-function-calling-v0.2"
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.__model_id)
         self.model = AutoModelForCausalLM.from_pretrained(
