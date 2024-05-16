@@ -53,7 +53,7 @@ def function_call(function_call_str: str) -> str:
     func_name = parsed_call.get("name")
     func_args = parsed_call.get("arguments")
 
-    if func_name == "get_document_text":
+    if func_name == "get_document_context_for_summarization":
         function_response = functions_map[func_name](
             st.session_state["selected_document_name"]
         )
