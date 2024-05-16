@@ -32,6 +32,10 @@ def parse_function_call(input_str: str) -> None | dict[str, any] | str:
             name = match.group(1)
             arguments_str = match.group(2)
 
+            # Remove surrounding quotes if they exist
+            if arguments_str.startswith(("'", '"')):
+                arguments_str = arguments_str[1:-1]
+
             # Parse the arguments JSON
             arguments = json.loads(arguments_str)
 
