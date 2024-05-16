@@ -43,6 +43,13 @@ def upload_file(file):
 
 def function_call(function_call_str: str) -> str:
     parsed_call = parse_function_call(function_call_str)
+
+    if parsed_call is None:
+        return None
+
+    if isinstance(parsed_call, str):
+        return parsed_call
+
     func_name = parsed_call.get("name")
     func_args = parsed_call.get("arguments")
 
@@ -68,7 +75,7 @@ def generate_response(prompt: str):
     llm_response = llm_call(prompt)
     next_llm_prompt = function_call(llm_response)
 
-    if next_llm_prompt != None:
+    if next_llm_prompt is not None:
         llm_response = generate_response(next_llm_prompt)
 
     return llm_response

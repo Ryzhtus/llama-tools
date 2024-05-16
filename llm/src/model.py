@@ -1,14 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from llm.src.functions import functions_list
+from llm.src.prompt import SYSTEM_PROMPT
 import torch
-
-SYSTEM_PROMPT = (
-    f"""You are an assistant that helps users extract and process information from their documents. 
-Your capabilities include summarization, document-based question-answering, content search by fragment, and finding similar document names.
-To fulfill a request, use one of the following functions: {str(functions_list)}."""
-    + """Use this format for function calls: <functioncall> {"name": "<function_name>", "arguments": "<arguments_json_string>"}. Name arguments as specified in the function description.
-Don't assume document content. If needed, call another tool for more information. For non-document-related queries, chat with the user."""
-)
 
 
 class GenerativeModel:

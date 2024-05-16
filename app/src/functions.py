@@ -12,14 +12,14 @@ def check_function_call(response: str) -> bool:
     return False
 
 
-def parse_function_call(input_str: str) -> None | dict[str, any]:
+def parse_function_call(input_str: str) -> None | dict[str, any] | str:
     """
     Parses a text string to find and extract a function call.
     The function call is expected to be in the format:
     <functioncall> {"name": "<function_name>", "arguments": "<arguments_json_string>"}
     """
     # Regex pattern to extract 'name' and 'arguments'
-    pattern = r'"name":\s*"([^"]+)",\s*"arguments":\s*\'(.*?)\''
+    pattern = r'"name":\s*"([^"]+)",\s*"arguments":\s*("{.*?}"|\'{.*?}\'|\{.*?\})'
 
     # Search with regex
     match = re.search(pattern, input_str)
@@ -33,12 +33,12 @@ def parse_function_call(input_str: str) -> None | dict[str, any]:
 
             return {"name": name, "arguments": arguments}
         except json.JSONDecodeError:
-            # If JSON parsing fails, return None
-            return None
+            # If JSON parsing fails, return an error message
+            return {"error": "An error during function call parsing has occurred."}
     return None
 
 
-def request_similiar_documents_contents(prompt: str, top_k: int) -> str:
+def search_similar_documents_in_the_database(prompt: str, top_k: int) -> str:
     response = requests.post(
         retrieval_url + "/search", json={"prompt": prompt, "top_k": 1}
     )
@@ -54,14 +54,14 @@ def request_list_of_documents_names(fragment: str) -> list[str]:
     return response.json()
 
 
-def get_current_document_text(name: str) -> str:
+def get_document_context_for_summarization(name: str) -> str:
     response = requests.post(retrieval_url + "/get_document", json={"name": name})
 
     return response.json()
 
 
 functions_map = {
-    "request_similiar_documents_contents": request_similiar_documents_contents,
+    "search_similar_documents_in_the_database": search_similar_documents_in_the_database,
     "request_list_of_documents_names": request_list_of_documents_names,
-    "get_current_document_text": get_current_document_text,
+    "get_current_document_text": get_document_context_for_summarization,
 }

@@ -38,7 +38,7 @@ class RetrievalEngine:
         )
 
         return sentence_embeddings
-    
+
     def reset(self):
         self.chunk_storage.reset()
         self.index.reset()
@@ -78,7 +78,7 @@ class RetrievalEngine:
                 pages = document.pages
                 return " ".join(pages)
 
-        return None
+        return f"There is no document with the name {name} in the database"
 
     def search(self, prompt: str, top_k: int = 1) -> str:
         prompt_embedding = self.__get_embeddings(prompt)
@@ -89,7 +89,12 @@ class RetrievalEngine:
 
         context = ""
         for idx in indices[0]:
-            context += self.chunk_storage[idx].text
+            chunk_context = (
+                f"From document: {self.chunk_storage[idx].document_name}:\n"
+                + self.chunk_storage[idx].text
+                + "\n\n"
+            )
+            context += chunk_context
 
         return context
 
